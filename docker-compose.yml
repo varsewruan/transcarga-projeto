@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Banco de dados MariaDB local (opcional - substitui o SkySQL)
+  mariadb:
+    image: mariadb:10.11
+    container_name: transcarga-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: Transcarga
+      MYSQL_USER: transcarga_user
+      MYSQL_PASSWORD: transcarga123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicação web
+  transcarga:
+    build: .
+    container_name: transcarga-web
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      # Configuração da conexão com o banco
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_NAME: Transcarga
+      DB_USER: transcarga_user
+      DB_PASSWORD: transcarga123
+    volumes:
+      - ./target:/usr/local/tomcat/webapps
+
+volumes:
+  maria

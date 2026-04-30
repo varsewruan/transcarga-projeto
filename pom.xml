@@ -15,17 +15,14 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jakartaee.version>10.0.0</jakartaee.version>
-        <hibernate.version>6.4.0.Final</hibernate.version>
     </properties>
 
     <dependencies>
-
-        <!-- Jakarta EE API (Servlets, JPA, etc.) -->
+        <!-- API de Servlets (Provida pelo Tomcat 10+) -->
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-web-api</artifactId>
-            <version>${jakartaee.version}</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -33,7 +30,7 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
+            <version>6.4.0.Final</version> <!-- Substituiu a variável pelo número real -->
         </dependency>
 
         <!-- MySQL JDBC Driver -->
@@ -49,14 +46,11 @@
             <artifactId>jakarta.transaction-api</artifactId>
             <version>2.0.1</version>
         </dependency>
-
     </dependencies>
 
     <build>
         <finalName>transcarga</finalName>
         <plugins>
-
-            <!-- Plugin para compilar com Java 17 -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
@@ -65,14 +59,10 @@
                     <target>17</target>
                 </configuration>
             </plugin>
-
-            <!-- Plugin para empacotar como .war -->
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
             </plugin>
-
         </plugins>
     </build>
-
 </project>

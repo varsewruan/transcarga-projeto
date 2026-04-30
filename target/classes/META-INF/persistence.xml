@@ -9,10 +9,10 @@
 
     <properties>
       <!-- JDBC -->
-      <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-      <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/transcarga?useSSL=false&amp;serverTimezone=UTC"/>
-      <property name="jakarta.persistence.jdbc.user" value="root"/>
-      <property name="jakarta.persistence.jdbc.password" value=""/>
+	  <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://serverless-europe-west4.sysp0000.db2.skysql.com:4079/Transcarga?useSSL=true&amp;serverTimezone=UTC"/>
+      <property name="jakarta.persistence.jdbc.user" value="dbpgf01245114"/>
+      <property name="jakarta.persistence.jdbc.password" value="M2hHYkw}oGI4Bimudv54t3c1"/>
 
       <!-- Hibernate -->
       <!-- MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialec
