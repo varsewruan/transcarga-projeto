@@ -1,0 +1,246 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Syne:wght@600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Syne', sans-serif;
+    background: linear-gradient(180deg, #ffffff 60%, #bbdcf9 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Navegação ── */
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    padding: 27px 2rem 14px;
+    background: transparent;
+    border-bottom: 1px solid rgba(180, 180, 180, 0.35);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.nav-links a {
+    font-family: 'Syne', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #2e6da4;
+    position: relative;
+    padding-bottom: 4px;
+    transition: color 0.25s;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: white;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.25s ease;
+}
+
+.nav-links a:hover {
+    color: white;
+}
+
+.nav-links a:hover::after {
+    transform: scaleX(1);
+}
+
+/* ── Main ── */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding-right: 8rem;
+}
+
+/* ── Lado da logo ── */
+.lado-logo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-grande {
+    width: 70%;
+    max-width: 1500px;
+    object-fit: contain;
+    padding-bottom: 20px;
+}
+
+/* ── Lado do formulário ── */
+.lado-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 3rem;
+    position: relative;
+}
+
+/* ── Status badge (canto superior direito do form) ── */
+.status-badge {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    background: white;
+    color: #4a9edd;
+    padding: 3px 8px;
+    border-radius: 99px;
+    position: absolute;
+    top: 2.9rem;
+    right: 3rem;
+    border: 1px solid rgba(46, 109, 164, 0.6);
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    background: #4a9edd;
+    border-radius: 50%;
+    animation: pulsar 1.5s infinite;
+}
+
+@keyframes pulsar {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+/* ── Card header ── */
+.card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.card-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #14426a;
+}
+
+.card-header h2 {
+    font-size: 13px;
+    font-weight: 400;
+    color: #5a8ab8;
+}
+
+.icone-cadastro {
+    height: 75px;
+    width: 55px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+/* ── Formulário ── */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: #3498db;
+
+}
+
+.field label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2e6da4;
+}
+
+.field input {
+    height: 38px;
+    padding: 0 12px;
+    background: transparent;
+    border: 1px solid rgba(46, 109, 164, 0.3);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: #14426a;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.field input::placeholder {
+    color: #555;
+}
+
+.field input:focus {
+    border-color: #2e6da4;
+}
+
+/* ── Rodapé do card ── */
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.btn-home {
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: #2e6da4;
+    border: 1px solid rgba(46, 109, 164, 0.4);
+    padding: 7px 14px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.btn-home:hover {
+    background: rgba(46, 109, 164, 0.08);
+}
+
+.btn-submit {
+    background: #2e6da4;
+    color: #f0f0f0;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-submit:hover {
+    background: #1a3a5c;
+}
+
+/* ── Footer final ── */
+.final-footer {
+    text-align: center;
+    padding-bottom: 20px;
+    font-size: 15px;
+    color: rgba(46, 109, 164, 0.873);
+    letter-spacing: 0.5px;
+}

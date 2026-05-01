@@ -2,15 +2,444 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Listar Fretes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Fretes - Transcarga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Syne', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #ffffff 60%, #bbdcf9 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #14426a;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            color: #5a8ab8;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(46, 109, 164, 0.2);
+        }
+
+        .stats-bar .total {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2e6da4;
+        }
+
+        .stats-bar .total span {
+            color: #14426a;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .btn-new-frete {
+            background: #2e6da4;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-new-frete:hover {
+            background: #1a3a5c;
+            transform: translateY(-2px);
+        }
+
+        /* Cards grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+        }
+
+        /* Card individual */
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.4s ease-out;
+            border: 1px solid rgba(46, 109, 164, 0.15);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(46, 109, 164, 0.15);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card header */
+        .card-header {
+            background: linear-gradient(135deg, #2e6da4 0%, #4a9edd 100%);
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+
+        .card-id {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: "📦";
+            font-size: 1.2rem;
+        }
+
+        /* Card body */
+        .card-body {
+            padding: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            color: #5a8ab8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-value {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            color: #14426a;
+        }
+
+        .peso-value {
+            background: #e8f0fe;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #2e6da4;
+        }
+
+        /* Card footer */
+        .card-footer {
+            padding: 15px 20px;
+            background: #f8fafc;
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid rgba(46, 109, 164, 0.1);
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: #e53e3e;
+            border: 1px solid #e53e3e;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #e53e3e;
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .btn-delete:active {
+            transform: scale(0.98);
+        }
+
+        /* Loading e estados */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #2e6da4;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+        }
+
+        .loading::after {
+            content: "...";
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60%, 100% { content: "..."; }
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 20px;
+            color: #5a8ab8;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            border: 1px solid rgba(46, 109, 164, 0.2);
+        }
+
+        .empty::before {
+            content: "📭";
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2e6da4;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .toast.error {
+            background: #e53e3e;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+    </style>
 </head>
-<body>    
-    <!-- A tabela será carregada e processada 100% no servlet -->
-    <iframe src="/transcarga/FreteServlet" 
-    	    style="width:400px; height:auto; border:none;">
-    </iframe>  
-    <br><a href='index.html'>Home</a>  
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚛 Transcarga</h1>
+            <p>Gerencie todos os fretes cadastrados no sistema</p>
+        </div>
+
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="total">Total de fretes: <span id="totalFretes">0</span></div>
+            <a href="cadastrarFrete.html" class="btn-new-frete">+ Novo Frete</a>
+        </div>
+
+        <div id="cardsContainer" class="cards-grid">
+            <div class="loading">Carregando fretes</div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = '/transcarga/FreteServlet';
+
+        async function carregarFretes() {
+            const container = document.getElementById('cardsContainer');
+            const statsBar = document.getElementById('statsBar');
+            
+            try {
+                const response = await fetch(BASE_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const fretes = await response.json();
+                console.log('Fretes carregados:', fretes);
+                
+                if (fretes.length === 0) {
+                    container.innerHTML = '<div class="empty">Nenhum frete cadastrado ainda.<br><br>👉 Clique em "Novo Frete" para começar</div>';
+                    statsBar.style.display = 'flex';
+                    document.getElementById('totalFretes').innerText = '0';
+                    return;
+                }
+                
+                statsBar.style.display = 'flex';
+                document.getElementById('totalFretes').innerText = fretes.length;
+                
+                container.innerHTML = fretes.map(frete => `
+                    <div class="card" data-id="${frete.id}">
+                        <div class="card-header">
+                            <div class="card-id">#${frete.id}</div>
+                            <div class="card-title">${escapeHtml(frete.destino)}</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-row">
+                                <span class="info-label">⚖️ Peso</span>
+                                <span class="info-value peso-value">${frete.peso} kg</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">🚛 Transportadora</span>
+                                <span class="info-value">${escapeHtml(frete.transportadora)}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn-delete" onclick="deletarFrete(${frete.id})">
+                                🗑️ Excluir
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Erro ao carregar:', error);
+                container.innerHTML = '<div class="empty">❌ Erro ao carregar fretes.<br>Verifique se o servidor está rodando.</div>';
+            }
+        }
+
+        async function deletarFrete(id) {
+            if (!confirm(`Tem certeza que deseja excluir o frete #${id}?`)) return;
+            
+            try {
+                const response = await fetch(`${BASE_URL}?id=${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const resultado = await response.json();
+                
+                if (response.ok && resultado.success) {
+                    mostrarToast('✅ Frete excluído com sucesso!', 'success');
+                    const card = document.querySelector(`.card[data-id="${id}"]`);
+                    if (card) {
+                        card.style.animation = 'fadeOut 0.3s ease-out';
+                        setTimeout(() => {
+                            carregarFretes();
+                        }, 300);
+                    } else {
+                        carregarFretes();
+                    }
+                } else {
+                    mostrarToast('❌ Erro ao excluir frete', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarToast('❌ Erro de conexão com o servidor', 'error');
+            }
+        }
+
+        function mostrarToast(mensagem, tipo = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo === 'error' ? 'error' : ''}`;
+            toast.innerHTML = mensagem;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            return texto
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Carrega os fretes quando a página abrir
+        carregarFretes();
+    </script>
 </body>
 </html>
-
-

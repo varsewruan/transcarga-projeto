@@ -29,4 +29,25 @@ public class FreteDAO {
             if (em != null && em.isOpen()) em.close();
         }
     }
+    
+    public boolean deletarFrete(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Frete frete = em.find(Frete.class, id);
+            if (frete != null) {
+                em.remove(frete);
+                em.getTransaction().commit();
+                return true;
+            }
+            em.getTransaction().rollback();
+            return false;
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            em.close();
+        }
+    }
 }

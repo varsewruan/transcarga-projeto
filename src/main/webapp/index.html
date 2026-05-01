@@ -1,16 +1,189 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-	<title>TransCarga - Sistema de Fretes</title>
-<body>
-<h1>Bem-vindo ao sistema TransCarga</h1>
-<ul>
-  <li><a href="cadastrarFrete.html">Cadastrar Frete</a></li>
-  <li><a href="listarFretes.html">Listar Fretes</a></li>
-</ul>
-</body>
-<footer>
-Mossoró, 2025
-</footer>
+<html>
+    <head>
+        <link rel="icon" href="assets/TranscargaLogo.png" type="image/png">
+        <link rel="stylesheet" href="Fretes.css">
+        <meta charset="UTF-8">
+        <title>Fretes - Transcarga</title>
+    </head>
+
+    <body>
+        <header class="header">
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="listarFretes.html">Fretes</a>
+                <a href="Relatorios.html">Relatórios</a>
+            </nav>
+
+            <div class="status-badge">
+                <span class="dot"></span> Sistema ativo
+            </div>
+        </header>
+        
+        <main class="grid-wrap">
+            <img src="assets/TranscargaLogo.png" class="logo-body" alt="Transcarga">
+            <div class="grid" id="FreteGrid">
+                <div class="loading">Carregando fretes...</div>
+            </div>
+        </main>
+
+        <p class="final-footer">© 2026 Transcarga — Transporte e segurança</p>
+
+        <script>
+            const BASE_URL = '/transcarga/FreteServlet';
+
+            async function carregarFretes() {
+                const grid = document.getElementById('FreteGrid');
+                
+                try {
+                    const response = await fetch(BASE_URL);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const fretes = await response.json();
+                    console.log('Fretes carregados:', fretes);
+                    
+                    if (fretes.length === 0) {
+                        grid.innerHTML = '<div class="empty">Nenhum frete cadastrado ainda.<br><br>👉 <a href="cadastrarFrete.html" style="color: #2e6da4;">Clique aqui</a> para cadastrar</div>';
+                        return;
+                    }
+                    
+                    grid.innerHTML = fretes.map(frete => `
+                        <div class="frete-card" data-id="${frete.id}">
+                            <div class="frete-card-body">
+                                <p class="frete-card-name">📦 ${escapeHtml(frete.destino)}</p>
+                                <p class="frete-card-desc">⚖️ Peso: ${frete.peso} kg</p>
+                                <p class="frete-card-desc">🚛 Transportadora: ${escapeHtml(frete.transportadora)}</p>
+                                <div class="frete-card-footer">
+                                    <button class="frete-btn" onclick="deletarFrete(${frete.id})">🗑️ Excluir</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                } catch (error) {
+                    console.error('Erro ao carregar:', error);
+                    grid.innerHTML = '<div class="empty">❌ Erro ao carregar fretes.<br>Verifique se o servidor está rodando.</div>';
+                }
+            }
+
+            async function deletarFrete(id) {
+                if (!confirm(`Tem certeza que deseja excluir o frete #${id}?`)) return;
+                
+                try {
+                    const response = await fetch(`${BASE_URL}?id=${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const resultado = await response.json();
+                    
+                    if (response.ok && resultado.success) {
+                        mostrarToast('✅ Frete excluído com sucesso!');
+                        // Remove o card da tela
+                        const card = document.querySelector(`.frete-card[data-id="${id}"]`);
+                        if (card) {
+                            card.style.animation = 'fadeOut 0.3s ease-out';
+                            setTimeout(() => {
+                                carregarFretes();
+                            }, 300);
+                        } else {
+                            carregarFretes();
+                        }
+                    } else {
+                        mostrarToast('❌ Erro ao excluir frete');
+                    }
+                } catch (error) {
+                    console.error('Erro:', error);
+                    mostrarToast('❌ Erro de conexão com o servidor');
+                }
+            }
+
+            function mostrarToast(mensagem) {
+                // Criar toast simples
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.innerHTML = mensagem;
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    background: #2e6da4;
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-family: 'DM Sans', sans-serif;
+                    font-size: 13px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease-out;
+                `;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            function escapeHtml(texto) {
+                if (!texto) return '';
+                return texto
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            // Adicionar animações extras
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeOut {
+                    from { opacity: 1; transform: scale(1); }
+                    to { opacity: 0; transform: scale(0.9); }
+                }
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                .empty {
+                    text-align: center;
+                    padding: 60px;
+                    background: white;
+                    border-radius: 20px;
+                    color: #5a8ab8;
+                    font-family: 'DM Sans', sans-serif;
+                    font-size: 0.95rem;
+                    border: 1px solid rgba(46, 109, 164, 0.2);
+                    grid-column: 1 / -1;
+                }
+                .loading {
+                    text-align: center;
+                    padding: 60px;
+                    color: #2e6da4;
+                    font-family: 'DM Sans', sans-serif;
+                    font-size: 1rem;
+                    grid-column: 1 / -1;
+                }
+                .loading::after {
+                    content: "...";
+                    animation: dots 1.5s steps(4, end) infinite;
+                }
+                @keyframes dots {
+                    0%, 20% { content: "."; }
+                    40% { content: ".."; }
+                    60%, 100% { content: "..."; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Carrega os fretes quando a página abrir
+            carregarFretes();
+        </script>
+    </body>
 </html>
