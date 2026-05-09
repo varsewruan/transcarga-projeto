@@ -1,6 +1,44 @@
+# Build
 target/
+*.war
+
+# Maven wrapper
+.mvn/
+
+# Eclipse
 .classpath
 .project
 .settings/
 .metadata/
-*.war
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code (local)
+.vscode/
+
+# JAR vendored (usar dependência Maven)
+lib/
+
+# Logs / temp
+*.log
+*.tmp
+*~
+
+# Sistema
+Thumbs.db
+.DS_Store
+
+# Secrets
+.env
+.env.local
+
+# Claude Code
+.claude/
+CLAUDE.md
+
+# Docker
+.dockerignore

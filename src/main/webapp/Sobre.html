@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre · Transcarga</title>
+    <link rel="icon" href="assets/TranscargaLogo.png" type="image/png">
+    <link rel="stylesheet" href="Fretes.css">
+    <link rel="stylesheet" href="Sobre.css">
+</head>
+
+<body>
+    <!-- Cabeçalho Padronizado -->
+    <header class="header">
+        <a href="home.html" class="brand">
+            <img src="assets/TranscargaLogo.png" class="brand-logo" alt="Transcarga">
+        </a>
+        <nav class="nav-links">
+            <a href="home.html" data-admin-only>DASHBOARD</a>
+            <a href="listarFretes.html">FRETES</a>
+            <a href="Sobre.html" class="active">SOBRE NÓS</a>
+        </nav>
+        <div class="status-badge" id="statusBadge">
+            <span class="user-avatar" id="userAvatar">·</span>
+            <div class="user-meta">
+                <span class="user-name" id="userLabel">—</span>
+                <span class="user-role" id="userRole" hidden>admin</span>
+            </div>
+            <a href="AuthServlet?action=logout" id="logoutBtn" class="logout-icon" title="Sair" aria-label="Sair">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="sobre-hero">
+            <span class="hero-tag">Sobre Nós · quem somos</span>
+            <h1>Movendo o Brasil com <span class="accent">Tecnologia</span></h1>
+        </section>
+
+        <section class="sobre-content">
+            <section class="sobre-historia">
+                <div class="historia-texto">
+                    <span class="eyebrow">
+                        <span class="eyebrow-dot"></span> Trajetória
+                    </span>
+                    <h2>Nossa <span class="accent">história</span></h2>
+                    <p>Fundada em 2021, a Transcarga surgiu da insatisfação com os processos manuais e planilhas
+                        confusas no setor de transportes. Uma equipe de desenvolvedores e especialistas em logística se
+                        uniu para criar uma plataforma intuitiva, rápida e 100% focada na experiência do usuário.</p>
+                    <p>Hoje, operamos em todo o território nacional, garantindo que milhares de toneladas cheguem aos
+                        seus destinos com rastreabilidade, segurança e eficiência.</p>
+                </div>
+                <div class="historia-imagem">
+                    <img src="assets/transcarga_sm.png" alt="Transcarga Logística">
+                </div>
+            </section>
+
+            <section class="mvv-section">
+                <article class="mvv-card">
+                    <div class="mvv-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="6"/>
+                            <circle cx="12" cy="12" r="2"/>
+                        </svg>
+                    </div>
+                    <h3>Missão</h3>
+                    <p>Simplificar o transporte de cargas, conectando empresas e transportadoras através de tecnologia
+                        acessível e dados precisos.</p>
+                </article>
+                <article class="mvv-card">
+                    <div class="mvv-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </div>
+                    <h3>Visão</h3>
+                    <p>Ser o principal e mais confiável ecossistema de gestão logística da América Latina até a próxima
+                        década.</p>
+                </article>
+                <article class="mvv-card">
+                    <div class="mvv-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 3h12l4 6-10 13L2 9z"/>
+                            <path d="M11 3 8 9l4 13 4-13-3-6"/>
+                            <path d="M2 9h20"/>
+                        </svg>
+                    </div>
+                    <h3>Valores</h3>
+                    <p>Transparência nas operações, inovação contínua, compromisso com a segurança e foco absoluto no
+                        sucesso do cliente.</p>
+                </article>
+            </section>
+
+            <section class="stats-section">
+                <div class="stats-head">
+                    <span class="eyebrow">
+                        <span class="eyebrow-dot"></span> Em números
+                    </span>
+                    <h2>Resultados que falam por nós</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">+15k</span>
+                        <span class="stat-label">Fretes realizados</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">450</span>
+                        <span class="stat-label">Transportadoras parceiras</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">99%</span>
+                        <span class="stat-label">Entregas no prazo</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Suporte ativo</span>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <p class="final-footer">© 2026 <strong>Transcarga</strong> — Transporte e segurança em movimento.</p>
+
+    <script>
+        async function checarSessao() {
+            try {
+                const r = await fetch('AuthServlet?action=me');
+                const data = await r.json();
+                if (!data.logged) { window.location.href = 'login.html'; return; }
+                document.getElementById('userLabel').textContent = data.login;
+                document.getElementById('userAvatar').textContent = (data.login || '?').charAt(0);
+                document.getElementById('userRole').hidden = !data.admin;
+                if (!data.admin) {
+                    document.querySelectorAll('[data-admin-only]').forEach(el => el.style.display = 'none');
+                    document.querySelector('.brand')?.setAttribute('href', 'listarFretes.html');
+                }
+            } catch { window.location.href = 'login.html'; }
+        }
+        checarSessao();
+    </script>
+</body>
+
+</html>

@@ -1,445 +1,643 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Fretes - Transcarga</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Syne', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(180deg, #ffffff 60%, #bbdcf9 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .header h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #14426a;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            color: #5a8ab8;
-        }
-
-        /* Stats bar */
-        .stats-bar {
-            background: white;
-            border-radius: 15px;
-            padding: 15px 25px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(46, 109, 164, 0.2);
-        }
-
-        .stats-bar .total {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #2e6da4;
-        }
-
-        .stats-bar .total span {
-            color: #14426a;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .btn-new-frete {
-            background: #2e6da4;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-new-frete:hover {
-            background: #1a3a5c;
-            transform: translateY(-2px);
-        }
-
-        /* Cards grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 25px;
-        }
-
-        /* Card individual */
-        .card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.4s ease-out;
-            border: 1px solid rgba(46, 109, 164, 0.15);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(46, 109, 164, 0.15);
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Card header */
-        .card-header {
-            background: linear-gradient(135deg, #2e6da4 0%, #4a9edd 100%);
-            padding: 20px;
-            color: white;
-            position: relative;
-        }
-
-        .card-id {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.75rem;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        .card-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title::before {
-            content: "📦";
-            font-size: 1.2rem;
-        }
-
-        /* Card body */
-        .card-body {
-            padding: 20px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 600;
-            font-size: 13px;
-            color: #5a8ab8;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-value {
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            color: #14426a;
-        }
-
-        .peso-value {
-            background: #e8f0fe;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #2e6da4;
-        }
-
-        /* Card footer */
-        .card-footer {
-            padding: 15px 20px;
-            background: #f8fafc;
-            display: flex;
-            justify-content: flex-end;
-            border-top: 1px solid rgba(46, 109, 164, 0.1);
-        }
-
-        .btn-delete {
-            background: transparent;
-            color: #e53e3e;
-            border: 1px solid #e53e3e;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-delete:hover {
-            background: #e53e3e;
-            color: white;
-            transform: scale(1.02);
-        }
-
-        .btn-delete:active {
-            transform: scale(0.98);
-        }
-
-        /* Loading e estados */
-        .loading {
-            text-align: center;
-            padding: 60px;
-            color: #2e6da4;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-        }
-
-        .loading::after {
-            content: "...";
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: "."; }
-            40% { content: ".."; }
-            60%, 100% { content: "..."; }
-        }
-
-        .empty {
-            text-align: center;
-            padding: 60px;
-            background: white;
-            border-radius: 20px;
-            color: #5a8ab8;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.95rem;
-            border: 1px solid rgba(46, 109, 164, 0.2);
-        }
-
-        .empty::before {
-            content: "📭";
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 15px;
-        }
-
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #2e6da4;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: slideIn 0.3s ease-out;
-            z-index: 1000;
-        }
-
-        .toast.error {
-            background: #e53e3e;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; transform: scale(1); }
-            to { opacity: 0; transform: scale(0.9); }
-        }
-    </style>
+    <title>Fretes · Transcarga</title>
+    <link rel="icon" href="assets/TranscargaLogo.png" type="image/png">
+    <link rel="stylesheet" href="Fretes.css">
+    <link rel="stylesheet" href="listarFretes.css">
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🚛 Transcarga</h1>
-            <p>Gerencie todos os fretes cadastrados no sistema</p>
-        </div>
 
-        <div class="stats-bar" id="statsBar" style="display: none;">
-            <div class="total">Total de fretes: <span id="totalFretes">0</span></div>
-            <a href="cadastrarFrete.html" class="btn-new-frete">+ Novo Frete</a>
+    <!-- Header -->
+    <header class="header">
+        <a href="home.html" class="brand">
+            <img src="assets/TranscargaLogo.png" class="brand-logo" alt="Transcarga">
+        </a>
+        <nav class="nav-links">
+            <a href="home.html" data-admin-only>DASHBOARD</a>
+            <a href="listarFretes.html" class="active">FRETES</a>
+            <a href="Sobre.html">SOBRE NÓS</a>
+        </nav>
+        <div class="status-badge" id="statusBadge">
+            <span class="user-avatar" id="userAvatar">·</span>
+            <div class="user-meta">
+                <span class="user-name" id="userLabel">—</span>
+                <span class="user-role" id="userRole" hidden>admin</span>
+            </div>
+            <a href="AuthServlet?action=logout" id="logoutBtn" class="logout-icon" title="Sair" aria-label="Sair">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </a>
         </div>
+    </header>
 
-        <div id="cardsContainer" class="cards-grid">
-            <div class="loading">Carregando fretes</div>
+    <main>
+        <!-- Top: intro + form -->
+        <section class="top-section">
+            <div class="intro">
+                <h1>Cadastre fretes,<br><span class="accent">acompanhe</span> a operação.</h1>
+                <p>Registre cada carga em segundos e tenha visão imediata de toda a frota. Tudo num só lugar — limpo,
+                    rápido e direto ao ponto.</p>
+
+                <div class="intro-stats">
+                    <div>
+                        <span class="stat-num" id="introTotal">—</span>
+                        <span class="stat-lbl">Fretes ativos</span>
+                    </div>
+                    <div>
+                        <span class="stat-num" id="introTransp">—</span>
+                        <span class="stat-lbl">Transportadoras</span>
+                    </div>
+                    <div>
+                        <span class="stat-num" id="introDest">—</span>
+                        <span class="stat-lbl">Destinos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card" data-admin-only>
+                <div class="form-head">
+                    <h2>Novo Frete</h2>
+                    <p>Preencha os dados da carga para registrá-la no sistema.</p>
+                </div>
+
+                <form class="cadastro-form" action="FreteServlet" method="post" accept-charset="UTF-8">
+                    <div class="field">
+                        <label for="cep">CEP</label>
+                        <div class="field-input-wrap">
+                            <span class="field-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                            </span>
+                            <input id="cep" type="text" name="cep" placeholder="Ex.: 59600-000" maxlength="9"
+                                inputmode="numeric" required>
+                        </div>
+                        <small class="field-hint" id="cepHint"></small>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="cidade">Cidade</label>
+                            <div class="field-input-wrap">
+                                <input id="cidade" type="text" name="cidade" placeholder="Preenchido pelo CEP"
+                                    readonly required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="estado">Estado</label>
+                            <div class="field-input-wrap">
+                                <input id="estado" type="text" name="estado" placeholder="UF" maxlength="2"
+                                    readonly required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="peso">Peso (kg)</label>
+                        <div class="field-input-wrap">
+                            <span class="field-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6.5 6.5h11l1.5 14h-14l1.5-14z" />
+                                    <path d="M9 6.5V5a3 3 0 0 1 6 0v1.5" />
+                                </svg>
+                            </span>
+                            <input id="peso" type="number" name="peso" placeholder="Ex.: 1500" min="1" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="transportadora">Transportadora</label>
+                        <div class="field-input-wrap">
+                            <span class="field-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="1" y="6" width="14" height="11" rx="1.5" />
+                                    <path d="M15 9h4l3 4v4h-7" />
+                                    <circle cx="6" cy="19" r="2" />
+                                    <circle cx="18" cy="19" r="2" />
+                                </svg>
+                            </span>
+                            <input id="transportadora" type="text" name="transportadora"
+                                placeholder="Ex.: Logística Express" required>
+                        </div>
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">
+                            Cadastrar frete
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Listagem -->
+        <section class="listagem-section">
+            <div class="list-head">
+                <div class="list-title-wrap">
+                    <h2>Fretes <span class="accent">registrados</span></h2>
+                    <p class="list-sub">Todas as cargas já cadastradas no sistema.</p>
+                </div>
+                <div class="list-tools">
+                    <div class="search-input">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="7" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Buscar cidade, estado, CEP ou transportadora"
+                            oninput="agendarFiltro()">
+                    </div>
+                </div>
+            </div>
+
+            <div id="cardsContainer" class="cards-grid">
+                <div class="loading">Carregando fretes</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de confirmação -->
+    <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle"
+        aria-describedby="confirmModalMsg" hidden>
+        <div class="modal">
+            <div class="modal-icon">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                </svg>
+            </div>
+            <h3 class="modal-title" id="confirmModalTitle">Excluir frete</h3>
+            <p class="modal-msg" id="confirmModalMsg">
+                Tem certeza que deseja excluir o frete <strong id="confirmModalAlvo">#—</strong>?<br>
+                Esta ação não poderá ser desfeita.
+            </p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" id="confirmModalCancelar">Cancelar</button>
+                <button type="button" class="btn btn-danger-solid" id="confirmModalConfirmar">Excluir</button>
+            </div>
         </div>
     </div>
 
+    <!-- Modal de edição -->
+    <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle" hidden>
+        <div class="modal modal-form">
+            <div class="modal-icon modal-icon-edit">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                </svg>
+            </div>
+            <h3 class="modal-title" id="editModalTitle">Editar frete <span id="editModalId">#—</span></h3>
+            <form id="editForm" class="cadastro-form modal-form-grid">
+                <input type="hidden" id="editId" name="id">
+                <div class="field">
+                    <label for="editCep">CEP</label>
+                    <div class="field-input-wrap">
+                        <span class="field-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </span>
+                        <input id="editCep" type="text" name="cep" maxlength="9" inputmode="numeric" required>
+                    </div>
+                    <small class="field-hint" id="editCepHint"></small>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label for="editCidade">Cidade</label>
+                        <div class="field-input-wrap">
+                            <input id="editCidade" type="text" name="cidade" readonly required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="editEstado">Estado</label>
+                        <div class="field-input-wrap">
+                            <input id="editEstado" type="text" name="estado" maxlength="2" readonly required>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="editPeso">Peso (kg)</label>
+                    <div class="field-input-wrap">
+                        <span class="field-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6.5 6.5h11l1.5 14h-14l1.5-14z"/>
+                                <path d="M9 6.5V5a3 3 0 0 1 6 0v1.5"/>
+                            </svg>
+                        </span>
+                        <input id="editPeso" type="number" name="peso" min="1" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="editTransportadora">Transportadora</label>
+                    <div class="field-input-wrap">
+                        <span class="field-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="6" width="14" height="11" rx="1.5"/>
+                                <path d="M15 9h4l3 4v4h-7"/>
+                                <circle cx="6" cy="19" r="2"/>
+                                <circle cx="18" cy="19" r="2"/>
+                            </svg>
+                        </span>
+                        <input id="editTransportadora" type="text" name="transportadora" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" id="editModalCancelar">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <p class="final-footer">© 2026 <strong>Transcarga</strong> — Transporte e segurança em movimento.</p>
+
     <script>
-        const BASE_URL = '/transcarga/FreteServlet';
+        const BASE_URL = 'FreteServlet';
+        let fretesAtuais = [];
+        let isAdmin = false;
 
         async function carregarFretes() {
             const container = document.getElementById('cardsContainer');
-            const statsBar = document.getElementById('statsBar');
-            
+
             try {
                 const response = await fetch(BASE_URL);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const fretes = await response.json();
-                console.log('Fretes carregados:', fretes);
-                
-                if (fretes.length === 0) {
-                    container.innerHTML = '<div class="empty">Nenhum frete cadastrado ainda.<br><br>👉 Clique em "Novo Frete" para começar</div>';
-                    statsBar.style.display = 'flex';
-                    document.getElementById('totalFretes').innerText = '0';
-                    return;
-                }
-                
-                statsBar.style.display = 'flex';
-                document.getElementById('totalFretes').innerText = fretes.length;
-                
-                container.innerHTML = fretes.map(frete => `
-                    <div class="card" data-id="${frete.id}">
-                        <div class="card-header">
-                            <div class="card-id">#${frete.id}</div>
-                            <div class="card-title">${escapeHtml(frete.destino)}</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="info-row">
-                                <span class="info-label">⚖️ Peso</span>
-                                <span class="info-value peso-value">${frete.peso} kg</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">🚛 Transportadora</span>
-                                <span class="info-value">${escapeHtml(frete.transportadora)}</span>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn-delete" onclick="deletarFrete(${frete.id})">
-                                🗑️ Excluir
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                fretesAtuais = await response.json();
+
+                animarNumero(document.getElementById('introTotal'), fretesAtuais.length);
+                animarNumero(document.getElementById('introTransp'), new Set(fretesAtuais.map(f => f.transportadora)).size);
+                animarNumero(document.getElementById('introDest'), new Set(fretesAtuais.map(f => `${f.cidade}/${f.estado}`)).size);
+
+                renderizarLista(fretesAtuais);
             } catch (error) {
-                console.error('Erro ao carregar:', error);
-                container.innerHTML = '<div class="empty">❌ Erro ao carregar fretes.<br>Verifique se o servidor está rodando.</div>';
+                container.innerHTML = renderEmpty('Erro de conexão', 'Não foi possível carregar os fretes. Verifique se o servidor está rodando.', '⚠️');
             }
         }
 
-        async function deletarFrete(id) {
-            if (!confirm(`Tem certeza que deseja excluir o frete #${id}?`)) return;
-            
+        let filtroTimer = null;
+        function agendarFiltro() {
+            clearTimeout(filtroTimer);
+            filtroTimer = setTimeout(filtrarLista, 700);
+        }
+
+        function filtrarLista() {
+            const termo = document.getElementById('searchInput').value.toLowerCase();
+            const filtrados = fretesAtuais.filter(f =>
+                (f.cidade || '').toLowerCase().includes(termo) ||
+                (f.estado || '').toLowerCase().includes(termo) ||
+                (f.cep || '').toLowerCase().includes(termo) ||
+                f.transportadora.toLowerCase().includes(termo)
+            );
+            renderizarLista(filtrados);
+        }
+
+        function renderizarLista(lista) {
+            const container = document.getElementById('cardsContainer');
+
+            if (lista.length === 0) {
+                const semCadastro = fretesAtuais.length === 0;
+                container.innerHTML = renderEmpty(
+                    semCadastro ? 'Sem fretes registrados' : 'Nenhum resultado',
+                    semCadastro
+                        ? 'Utilize o formulário acima para registrar o primeiro frete.'
+                        : 'Tente ajustar o termo de busca.',
+                    '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
+                );
+                return;
+            }
+
+            container.innerHTML = lista.map((frete, i) => `
+                <div class="card" data-id="${frete.id}" style="animation-delay: ${(i * 0.04).toFixed(2)}s">
+                    <div class="card-top">
+                        <div class="card-id">#${frete.id}</div>
+                        <div class="card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            ${escapeHtml(frete.cidade || '—')} / ${escapeHtml(frete.estado || '—')}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="info-label">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3v18"/></svg>
+                                CEP
+                            </span>
+                            <span class="info-value">${escapeHtml(frete.cep || '—')}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11l1.5 14h-14l1.5-14z"/><path d="M9 6.5V5a3 3 0 0 1 6 0v1.5"/></svg>
+                                Peso
+                            </span>
+                            <span class="info-value peso-value">${Number(frete.peso).toLocaleString('pt-BR')} kg</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1.5"/><path d="M15 9h4l3 4v4h-7"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg>
+                                Transportadora
+                            </span>
+                            <span class="info-value">${escapeHtml(frete.transportadora)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+                                Cadastrado em
+                            </span>
+                            <span class="info-value">${formatarData(frete.timestamp)}</span>
+                        </div>
+                    </div>
+                    ${isAdmin ? `
+                    <div class="card-footer">
+                        <button class="btn btn-ghost" onclick="abrirEdicao(${frete.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                            Editar
+                        </button>
+                        <button class="btn btn-danger" onclick="deletarFrete(${frete.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+                            Excluir
+                        </button>
+                    </div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderEmpty(title, msg, icon) {
+            return `
+                <div class="empty">
+                    <div class="empty-icon">${icon}</div>
+                    <div class="empty-title">${title}</div>
+                    <div>${msg}</div>
+                </div>`;
+        }
+
+        function confirmarExclusao(id) {
+            return new Promise(resolve => {
+                const overlay = document.getElementById('confirmModal');
+                const btnOk = document.getElementById('confirmModalConfirmar');
+                const btnCancelar = document.getElementById('confirmModalCancelar');
+                const alvo = document.getElementById('confirmModalAlvo');
+
+                alvo.textContent = `#${id}`;
+                overlay.hidden = false;
+                requestAnimationFrame(() => overlay.classList.add('is-open'));
+                btnOk.focus();
+
+                const fechar = (resultado) => {
+                    overlay.classList.remove('is-open');
+                    setTimeout(() => { overlay.hidden = true; }, 250);
+                    btnOk.removeEventListener('click', onOk);
+                    btnCancelar.removeEventListener('click', onCancelar);
+                    overlay.removeEventListener('click', onBackdrop);
+                    document.removeEventListener('keydown', onTecla);
+                    resolve(resultado);
+                };
+                const onOk = () => fechar(true);
+                const onCancelar = () => fechar(false);
+                const onBackdrop = (e) => { if (e.target === overlay) fechar(false); };
+                const onTecla = (e) => {
+                    if (e.key === 'Escape') fechar(false);
+                    else if (e.key === 'Enter') fechar(true);
+                };
+
+                btnOk.addEventListener('click', onOk);
+                btnCancelar.addEventListener('click', onCancelar);
+                overlay.addEventListener('click', onBackdrop);
+                document.addEventListener('keydown', onTecla);
+            });
+        }
+
+        function abrirEdicao(id) {
+            const frete = fretesAtuais.find(f => f.id === id);
+            if (!frete) return;
+
+            document.getElementById('editId').value = frete.id;
+            document.getElementById('editModalId').textContent = `#${frete.id}`;
+            document.getElementById('editCep').value = frete.cep || '';
+            document.getElementById('editCidade').value = frete.cidade || '';
+            document.getElementById('editEstado').value = frete.estado || '';
+            document.getElementById('editPeso').value = frete.peso;
+            document.getElementById('editTransportadora').value = frete.transportadora;
+            document.getElementById('editCepHint').textContent = '';
+
+            const overlay = document.getElementById('editModal');
+            overlay.hidden = false;
+            requestAnimationFrame(() => overlay.classList.add('is-open'));
+            document.getElementById('editCep').focus();
+        }
+
+        function fecharEdicao() {
+            const overlay = document.getElementById('editModal');
+            overlay.classList.remove('is-open');
+            setTimeout(() => { overlay.hidden = true; }, 250);
+        }
+
+        document.getElementById('editModalCancelar').addEventListener('click', fecharEdicao);
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') fecharEdicao();
+        });
+        document.addEventListener('keydown', (e) => {
+            const overlay = document.getElementById('editModal');
+            if (!overlay.hidden && e.key === 'Escape') fecharEdicao();
+        });
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const body = new URLSearchParams({
+                id,
+                cep: document.getElementById('editCep').value,
+                cidade: document.getElementById('editCidade').value,
+                estado: document.getElementById('editEstado').value,
+                peso: document.getElementById('editPeso').value,
+                transportadora: document.getElementById('editTransportadora').value,
+            });
+
             try {
-                const response = await fetch(`${BASE_URL}?id=${id}`, {
-                    method: 'DELETE'
+                const response = await fetch(BASE_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: body.toString()
                 });
-                
                 const resultado = await response.json();
-                
                 if (response.ok && resultado.success) {
-                    mostrarToast('✅ Frete excluído com sucesso!', 'success');
+                    mostrarToast('Frete atualizado');
+                    fecharEdicao();
+                    carregarFretes();
+                } else {
+                    mostrarToast(resultado.message || 'Erro ao atualizar', 'error');
+                }
+            } catch {
+                mostrarToast('Erro de conexão com o servidor', 'error');
+            }
+        });
+
+        async function deletarFrete(id) {
+            if (!await confirmarExclusao(id)) return;
+
+            try {
+                const response = await fetch(`${BASE_URL}?id=${id}`, { method: 'DELETE' });
+                const resultado = await response.json();
+
+                if (response.ok && resultado.success) {
+                    mostrarToast('Frete excluído com sucesso');
                     const card = document.querySelector(`.card[data-id="${id}"]`);
                     if (card) {
-                        card.style.animation = 'fadeOut 0.3s ease-out';
-                        setTimeout(() => {
-                            carregarFretes();
-                        }, 300);
+                        card.style.animation = 'fadeOut 0.3s var(--ease-out)';
+                        setTimeout(carregarFretes, 280);
                     } else {
                         carregarFretes();
                     }
                 } else {
-                    mostrarToast('❌ Erro ao excluir frete', 'error');
+                    mostrarToast('Erro ao excluir frete', 'error');
                 }
-            } catch (error) {
-                console.error('Erro:', error);
-                mostrarToast('❌ Erro de conexão com o servidor', 'error');
+            } catch {
+                mostrarToast('Erro de conexão com o servidor', 'error');
             }
         }
 
         function mostrarToast(mensagem, tipo = 'success') {
             const toast = document.createElement('div');
             toast.className = `toast ${tipo === 'error' ? 'error' : ''}`;
-            toast.innerHTML = mensagem;
+            toast.textContent = mensagem;
             document.body.appendChild(toast);
-            
             setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease-out';
+                toast.style.animation = 'slideOut 0.3s var(--ease-out)';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+        }
+
+        function animarNumero(el, alvo, duracao = 800) {
+            if (!el) return;
+            const inicio = performance.now();
+            const passo = (now) => {
+                const t = Math.min(1, (now - inicio) / duracao);
+                const eased = 1 - Math.pow(1 - t, 3);
+                el.innerText = Math.round(alvo * eased);
+                if (t < 1) requestAnimationFrame(passo);
+            };
+            requestAnimationFrame(passo);
         }
 
         function escapeHtml(texto) {
             if (!texto) return '';
             return texto
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
         }
 
-        // Carrega os fretes quando a página abrir
-        carregarFretes();
+        function formatarData(iso) {
+            if (!iso) return '—';
+            try {
+                const d = new Date(iso);
+                if (isNaN(d.getTime())) return '—';
+                return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+            } catch { return '—'; }
+        }
+
+        async function checarSessao() {
+            try {
+                const r = await fetch('AuthServlet?action=me');
+                const data = await r.json();
+                if (!data.logged) { window.location.href = 'login.html'; return; }
+                document.getElementById('userLabel').textContent = data.login;
+                document.getElementById('userAvatar').textContent = (data.login || '?').charAt(0);
+                document.getElementById('userRole').hidden = !data.admin;
+                isAdmin = !!data.admin;
+                if (!data.admin) {
+                    document.querySelectorAll('[data-admin-only]').forEach(el => el.style.display = 'none');
+                    document.querySelector('.brand')?.setAttribute('href', 'listarFretes.html');
+                    document.querySelector('.top-section')?.classList.add('solo');
+                    const introH1 = document.querySelector('.intro h1');
+                    if (introH1) introH1.innerHTML = 'Visualize fretes,<br><span class="accent">acompanhe</span> a operação.';
+                    const introP = document.querySelector('.intro > p');
+                    if (introP) introP.textContent = 'Consulte cada carga registrada e tenha visão imediata de toda a frota. Tudo num só lugar — limpo, rápido e direto ao ponto.';
+                }
+            } catch { window.location.href = 'login.html'; }
+        }
+
+        function mascararCep(valor) {
+            const digitos = (valor || '').replace(/\D/g, '').slice(0, 8);
+            if (digitos.length > 5) return `${digitos.slice(0, 5)}-${digitos.slice(5)}`;
+            return digitos;
+        }
+
+        async function buscarCep(cepRaw, alvoCidade, alvoEstado, hint) {
+            const digitos = (cepRaw || '').replace(/\D/g, '');
+            if (hint) hint.textContent = '';
+            if (digitos.length !== 8) {
+                alvoCidade.value = '';
+                alvoEstado.value = '';
+                if (hint && digitos.length > 0) hint.textContent = 'CEP deve ter 8 dígitos';
+                return;
+            }
+            if (hint) hint.textContent = 'Buscando endereço…';
+            try {
+                const r = await fetch(`https://brasilapi.com.br/api/cep/v1/${digitos}`);
+                if (!r.ok) {
+                    if (hint) hint.textContent = 'CEP não encontrado';
+                    alvoCidade.value = '';
+                    alvoEstado.value = '';
+                    return;
+                }
+                const dados = await r.json();
+                alvoCidade.value = dados.city || '';
+                alvoEstado.value = dados.state || '';
+                if (hint) hint.textContent = '';
+            } catch {
+                if (hint) hint.textContent = 'Erro ao consultar CEP';
+            }
+        }
+
+        function ligarLookupCep(idCep, idCidade, idEstado, idHint) {
+            const cep = document.getElementById(idCep);
+            const cidade = document.getElementById(idCidade);
+            const estado = document.getElementById(idEstado);
+            const hint = idHint ? document.getElementById(idHint) : null;
+            if (!cep) return;
+            let ultimoBuscado = '';
+            cep.addEventListener('input', () => {
+                cep.value = mascararCep(cep.value);
+                const digitos = cep.value.replace(/\D/g, '');
+                if (digitos.length === 8 && digitos !== ultimoBuscado) {
+                    ultimoBuscado = digitos;
+                    buscarCep(cep.value, cidade, estado, hint);
+                } else if (digitos.length < 8) {
+                    ultimoBuscado = '';
+                }
+            });
+            cep.addEventListener('blur', () => {
+                const digitos = cep.value.replace(/\D/g, '');
+                if (digitos.length === 8 && digitos !== ultimoBuscado) {
+                    ultimoBuscado = digitos;
+                    buscarCep(cep.value, cidade, estado, hint);
+                }
+            });
+        }
+
+        ligarLookupCep('cep', 'cidade', 'estado', 'cepHint');
+        ligarLookupCep('editCep', 'editCidade', 'editEstado', 'editCepHint');
+
+        (async () => {
+            await checarSessao();
+            carregarFretes();
+        })();
     </script>
 </body>
+
 </html>

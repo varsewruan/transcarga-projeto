@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <link rel="icon" href="assets/TranscargaLogo.png" type="image/png">
+    <link rel="stylesheet" href="Fretes.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <title>Dashboard · Transcarga</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+
+<body>
+    <header class="header">
+        <a href="home.html" class="brand">
+            <img src="assets/TranscargaLogo.png" class="brand-logo" alt="Transcarga">
+        </a>
+        <nav class="nav-links">
+            <a href="home.html" class="active" data-admin-only>DASHBOARD</a>
+            <a href="listarFretes.html">FRETES</a>
+            <a href="Sobre.html">SOBRE NÓS</a>
+        </nav>
+        <div class="status-badge" id="statusBadge">
+            <span class="user-avatar" id="userAvatar">·</span>
+            <div class="user-meta">
+                <span class="user-name" id="userLabel">—</span>
+                <span class="user-role" id="userRole" hidden>admin</span>
+            </div>
+            <a href="AuthServlet?action=logout" id="logoutBtn" class="logout-icon" title="Sair" aria-label="Sair">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Hero: somente logo + slogan -->
+        <section class="hero">
+            <div class="hero-media">
+                <img src="assets/transcarga_sm.png" class="hero-logo" alt="Transcarga">
+            </div>
+            <div class="hero-content">
+                <h1>Logística <span class="accent">inteligente</span><br>do cadastro à entrega.</h1>
+            </div>
+        </section>
+
+        <!-- Bloco secundário: status, descrição e CTAs -->
+        <section class="intro-meta">
+            <span class="eyebrow">
+                <span class="eyebrow-dot"></span> Painel de Operações · em tempo real
+            </span>
+        </section>
+
+        <!-- Dashboard -->
+        <div class="dashboard" id="dashboard">
+
+            <!-- Barra de ações -->
+            <div class="actions-bar">
+                <a href="listarFretes.html" class="actions-bar-btn is-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Cadastrar Frete
+                </a>
+                <button type="button" id="btnFiltrar" class="actions-bar-btn is-ghost"
+                    onclick="toggleFilterPopover(event)" aria-expanded="false">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                    </svg>
+                    Filtrar
+                </button>
+
+                <div id="filterPopover" class="filter-popover" role="dialog" aria-label="Filtros">
+                    <div class="filter-popover-head">
+                        <span>Filtros</span>
+                        <button type="button" class="filter-popover-close" onclick="fecharFilterPopover()"
+                            aria-label="Fechar">×</button>
+                    </div>
+                    <div class="filtro-group">
+                        <label>Cidade</label>
+                        <select id="filtroCidade">
+                            <option value="">Todas as cidades</option>
+                        </select>
+                    </div>
+                    <div class="filtro-group">
+                        <label>Estado</label>
+                        <select id="filtroEstado">
+                            <option value="">Todos os estados</option>
+                        </select>
+                    </div>
+                    <div class="filtro-group">
+                        <label>Transportadora</label>
+                        <select id="filtroTransportadora">
+                            <option value="">Todas as transportadoras</option>
+                        </select>
+                    </div>
+                    <div class="filter-popover-actions">
+                        <button type="button" class="btn btn-ghost" onclick="limparFiltros()">Limpar</button>
+                        <button type="button" class="btn btn-primary"
+                            onclick="aplicarFiltros(); fecharFilterPopover();">Aplicar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicador de carregamento -->
+            <div id="loadingFretes" class="loading">Carregando fretes</div>
+
+            <!-- Mensagem de erro de carregamento (oculta por padrão) -->
+            <div id="loadError" class="empty-state" style="display:none;"></div>
+
+            <!-- Mensagem de estado vazio (sem fretes ou filtros sem resultado) -->
+            <div id="emptyState" style="display:none; text-align:center; padding:64px 20px; background:var(--surface); border:1px dashed var(--border-strong); border-radius:var(--r-lg); color:var(--muted); font-family:var(--font-body); font-size:14.5px;"></div>
+
+            <!-- Gráficos -->
+            <div class="charts-row" id="chartsRow" style="display:none;">
+                <div class="chart-card">
+                    <div class="chart-card-head">
+                        <div class="chart-title">Fretes por Transportadora</div>
+                        <span class="chart-tag">Distribuição</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartPizza"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-head">
+                        <div class="chart-title">Top Cidades</div>
+                        <span class="chart-tag">Volume</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartDestinos"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-head">
+                        <div class="chart-title">Peso Total</div>
+                        <span class="chart-tag">kg</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartPeso"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela -->
+            <div class="table-card" id="tableCard" style="display:none;">
+                <div class="table-header">
+                    <div class="table-title">Listagem de Fretes</div>
+                    <button class="btn btn-primary" onclick="exportarCSV()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Exportar CSV
+                    </button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>CEP</th>
+                                <th>Cidade / UF</th>
+                                <th>Peso</th>
+                                <th>Transportadora</th>
+                                <th>Cadastrado em</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <p class="final-footer">© 2026 <strong>Transcarga</strong> — Transporte e segurança em movimento.</p>
+
+    <script>
+        const BASE_URL = 'FreteServlet';
+        let todosFretes = [];
+        let fretesFiltrados = [];
+        let chartPizza, chartDestinos, chartPeso;
+
+        const CORES = [
+            'rgba(46, 109, 164, 0.85)',
+            'rgba(74, 158, 221, 0.85)',
+            'rgba(20, 66, 106, 0.85)',
+            'rgba(94, 179, 245, 0.85)',
+            'rgba(163, 208, 248, 0.85)',
+            'rgba(30, 80, 130, 0.85)',
+            'rgba(124, 197, 240, 0.85)',
+        ];
+
+        async function carregarFretes() {
+            const loading = document.getElementById('loadingFretes');
+            try {
+                const response = await fetch(BASE_URL);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                todosFretes = await response.json();
+                fretesFiltrados = [...todosFretes];
+                popularFiltros();
+                renderizarTudo();
+            } catch (error) {
+                const err = document.getElementById('loadError');
+                err.textContent = '⚠️ Não foi possível carregar os dados. Verifique se o servidor está rodando.';
+                err.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function popularFiltros() {
+            const cidades = [...new Set(todosFretes.map(f => f.cidade).filter(Boolean))].sort();
+            const estados = [...new Set(todosFretes.map(f => f.estado).filter(Boolean))].sort();
+            const transportadoras = [...new Set(todosFretes.map(f => f.transportadora))].sort();
+
+            const selCid = document.getElementById('filtroCidade');
+            cidades.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c; opt.textContent = c;
+                selCid.appendChild(opt);
+            });
+
+            const selEst = document.getElementById('filtroEstado');
+            estados.forEach(e => {
+                const opt = document.createElement('option');
+                opt.value = e; opt.textContent = e;
+                selEst.appendChild(opt);
+            });
+
+            const selTrans = document.getElementById('filtroTransportadora');
+            transportadoras.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t; opt.textContent = t;
+                selTrans.appendChild(opt);
+            });
+        }
+
+        function aplicarFiltros() {
+            const cidade = document.getElementById('filtroCidade').value;
+            const estado = document.getElementById('filtroEstado').value;
+            const transportadora = document.getElementById('filtroTransportadora').value;
+            fretesFiltrados = todosFretes.filter(f =>
+                (!cidade || f.cidade === cidade) &&
+                (!estado || f.estado === estado) &&
+                (!transportadora || f.transportadora === transportadora)
+            );
+            renderizarTudo();
+        }
+
+        function limparFiltros() {
+            document.getElementById('filtroCidade').value = '';
+            document.getElementById('filtroEstado').value = '';
+            document.getElementById('filtroTransportadora').value = '';
+            fretesFiltrados = [...todosFretes];
+            renderizarTudo();
+        }
+
+        function renderizarTudo() {
+            const temDados = fretesFiltrados.length > 0;
+            const empty = document.getElementById('emptyState');
+
+            if (temDados) {
+                renderizarGraficos();
+                renderizarTabela();
+                empty.style.display = 'none';
+            } else {
+                const semCadastro = todosFretes.length === 0;
+                const titulo = semCadastro ? 'Sem fretes registrados' : 'Nenhum resultado';
+                const msg = semCadastro
+                    ? 'Cadastre o primeiro frete para visualizar o painel.'
+                    : 'Tente ajustar os filtros selecionados.';
+                const icone = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>';
+                empty.innerHTML = `
+                    <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, var(--brand-50), rgba(94, 179, 245, 0.18)); display:grid; place-items:center; margin:0 auto 18px; border:1px solid var(--border); color:var(--brand-700);">${icone}</div>
+                    <div style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--brand-800); margin-bottom:6px;">${titulo}</div>
+                    <div>${msg}</div>`;
+                empty.style.display = 'block';
+            }
+
+            document.getElementById('chartsRow').style.display = temDados ? 'grid' : 'none';
+            document.getElementById('tableCard').style.display = temDados ? 'block' : 'none';
+        }
+
+        function renderizarGraficos() {
+            const fontFamily = "'DM Sans', system-ui, sans-serif";
+            const tickColor = '#5a8ab8';
+            const labelColor = '#0d2e4d';
+            const gridColor = 'rgba(46, 109, 164, 0.08)';
+
+            const porTransp = agrupar(fretesFiltrados, 'transportadora');
+            if (chartPizza) chartPizza.destroy();
+            chartPizza = new Chart(document.getElementById('chartPizza'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(porTransp),
+                    datasets: [{
+                        data: Object.values(porTransp).map(v => v.count),
+                        backgroundColor: CORES,
+                        borderWidth: 3,
+                        borderColor: '#fff',
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '62%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: fontFamily, size: 11.5 },
+                                color: tickColor,
+                                padding: 12,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const porDest = agrupar(fretesFiltrados, 'cidade');
+            const topDest = Object.entries(porDest).sort((a, b) => b[1].count - a[1].count).slice(0, 7);
+            if (chartDestinos) chartDestinos.destroy();
+            chartDestinos = new Chart(document.getElementById('chartDestinos'), {
+                type: 'bar',
+                data: {
+                    labels: topDest.map(([k]) => k),
+                    datasets: [{
+                        label: 'Fretes',
+                        data: topDest.map(([, v]) => v.count),
+                        backgroundColor: 'rgba(46, 109, 164, 0.85)',
+                        hoverBackgroundColor: 'rgba(20, 66, 106, 0.95)',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 16
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: gridColor, drawBorder: false }, ticks: { font: { family: fontFamily, size: 11 }, color: tickColor } },
+                        y: { grid: { display: false, drawBorder: false }, ticks: { font: { family: fontFamily, size: 11.5, weight: '500' }, color: labelColor } }
+                    }
+                }
+            });
+
+            const pesoTransp = Object.entries(agrupar(fretesFiltrados, 'transportadora'))
+                .sort((a, b) => b[1].pesoTotal - a[1].pesoTotal);
+            if (chartPeso) chartPeso.destroy();
+            chartPeso = new Chart(document.getElementById('chartPeso'), {
+                type: 'bar',
+                data: {
+                    labels: pesoTransp.map(([k]) => k),
+                    datasets: [{
+                        label: 'Peso (kg)',
+                        data: pesoTransp.map(([, v]) => v.pesoTotal),
+                        backgroundColor: CORES,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 24
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false, drawBorder: false }, ticks: { font: { family: fontFamily, size: 11.5, weight: '500' }, color: labelColor } },
+                        y: { grid: { color: gridColor, drawBorder: false }, ticks: { font: { family: fontFamily, size: 11 }, color: tickColor } }
+                    }
+                }
+            });
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById('tabelaBody');
+            if (fretesFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Nenhum frete encontrado com os filtros selecionados.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = fretesFiltrados.map(f => `
+                <tr>
+                    <td class="id-cell">#${f.id}</td>
+                    <td class="id-cell">${escapeHtml(f.cep || '—')}</td>
+                    <td style="font-weight:500;">${escapeHtml(f.cidade || '—')} / ${escapeHtml(f.estado || '—')}</td>
+                    <td><span class="badge-peso">${Number(f.peso).toLocaleString('pt-BR')} kg</span></td>
+                    <td>${escapeHtml(f.transportadora)}</td>
+                    <td class="id-cell">${formatarData(f.timestamp)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function agrupar(fretes, campo) {
+            return fretes.reduce((acc, f) => {
+                const key = f[campo];
+                if (!acc[key]) acc[key] = { count: 0, pesoTotal: 0 };
+                acc[key].count++;
+                acc[key].pesoTotal += Number(f.peso);
+                return acc;
+            }, {});
+        }
+
+        function exportarCSV() {
+            const linhas = [['ID', 'CEP', 'Cidade', 'Estado', 'Peso (kg)', 'Transportadora', 'Cadastrado em']];
+            fretesFiltrados.forEach(f => linhas.push([f.id, f.cep || '', f.cidade || '', f.estado || '', f.peso, f.transportadora, formatarData(f.timestamp)]));
+            const csv = linhas.map(l => l.join(';')).join('\n');
+            const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'relatorio_fretes.csv';
+            a.click(); URL.revokeObjectURL(url);
+        }
+
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            return texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function formatarData(iso) {
+            if (!iso) return '—';
+            try {
+                const d = new Date(iso);
+                if (isNaN(d.getTime())) return '—';
+                return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+            } catch { return '—'; }
+        }
+
+        async function checarSessao() {
+            try {
+                const r = await fetch('AuthServlet?action=me');
+                const data = await r.json();
+                if (!data.logged) { window.location.href = 'login.html'; return; }
+                document.getElementById('userLabel').textContent = data.login;
+                document.getElementById('userAvatar').textContent = (data.login || '?').charAt(0);
+                document.getElementById('userRole').hidden = !data.admin;
+                if (!data.admin) {
+                    document.querySelectorAll('[data-admin-only]').forEach(el => el.style.display = 'none');
+                    document.querySelector('.brand')?.setAttribute('href', 'listarFretes.html');
+                }
+            } catch { window.location.href = 'login.html'; }
+        }
+        checarSessao();
+
+        function toggleFilterPopover(event) {
+            event.stopPropagation();
+            const pop = document.getElementById('filterPopover');
+            const btn = document.getElementById('btnFiltrar');
+            const isOpen = pop.classList.toggle('is-open');
+            btn.classList.toggle('is-active', isOpen);
+            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+
+        function fecharFilterPopover() {
+            const pop = document.getElementById('filterPopover');
+            const btn = document.getElementById('btnFiltrar');
+            pop.classList.remove('is-open');
+            btn.classList.remove('is-active');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+
+        document.addEventListener('click', (e) => {
+            const pop = document.getElementById('filterPopover');
+            const btn = document.getElementById('btnFiltrar');
+            if (!pop || !btn) return;
+            if (pop.classList.contains('is-open') &&
+                !pop.contains(e.target) && !btn.contains(e.target)) {
+                fecharFilterPopover();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') fecharFilterPopover();
+        });
+
+        carregarFretes();
+    </script>
+</body>
+
+</html>

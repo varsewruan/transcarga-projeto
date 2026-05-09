@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro · Transcarga</title>
+    <link rel="icon" href="assets/TranscargaLogo.png" type="image/png">
+    <link rel="stylesheet" href="Fretes.css">
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+
+<body>
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <img src="assets/transcarga_sm.png" class="auth-logo" alt="Transcarga">
+            <h1>Criar conta</h1>
+            <p class="auth-sub">Cadastre-se para acessar o sistema.</p>
+
+            <form class="auth-form" id="cadForm" autocomplete="on">
+                <div class="field">
+                    <label for="login">Login</label>
+                    <input id="login" name="login" type="text" required autofocus minlength="3">
+                </div>
+                <div class="field">
+                    <label for="senha">Senha</label>
+                    <input id="senha" name="senha" type="password" required minlength="4">
+                </div>
+                <div class="field">
+                    <label for="senha2">Confirmar senha</label>
+                    <input id="senha2" name="senha2" type="password" required minlength="4">
+                </div>
+                <button type="submit" class="auth-btn">Cadastrar</button>
+                <div id="msg" class="auth-msg"></div>
+            </form>
+
+            <p class="auth-link">Já tem conta? <a href="login.html">Entrar</a></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('cadForm');
+        const msg = document.getElementById('msg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            msg.className = 'auth-msg';
+            const senha = document.getElementById('senha').value;
+            const senha2 = document.getElementById('senha2').value;
+            if (senha !== senha2) {
+                msg.className = 'auth-msg error';
+                msg.textContent = 'As senhas não conferem.';
+                return;
+            }
+            const body = new URLSearchParams();
+            body.set('action', 'cadastrar');
+            body.set('login', document.getElementById('login').value);
+            body.set('senha', senha);
+
+            try {
+                const r = await fetch('AuthServlet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body
+                });
+                const data = await r.json();
+                if (r.ok && data.success) {
+                    msg.className = 'auth-msg ok';
+                    msg.textContent = 'Conta criada. Redirecionando para o login...';
+                    setTimeout(() => window.location.href = 'login.html', 800);
+                } else {
+                    msg.className = 'auth-msg error';
+                    msg.textContent = data.message || 'Falha ao cadastrar.';
+                }
+            } catch {
+                msg.className = 'auth-msg error';
+                msg.textContent = 'Erro de conexão com o servidor.';
+            }
+        });
+    </script>
+</body>
+
+</html>

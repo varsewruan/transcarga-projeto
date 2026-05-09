@@ -6,20 +6,19 @@
 
   <persistence-unit name="TransCargaPU" transaction-type="RESOURCE_LOCAL">
     <class>br.com.transcarga.persistencia.Frete</class>
+    <class>br.com.transcarga.persistencia.Usuario</class>
 
     <properties>
-      <!-- JDBC -->
-	  <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
-      <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://serverless-europe-west4.sysp0000.db2.skysql.com:4079/Transcarga?useSSL=true&amp;serverTimezone=UTC"/>
-      <property name="jakarta.persistence.jdbc.user" value="dbpgf01245114"/>
-      <property name="jakarta.persistence.jdbc.password" value="M2hHYkw}oGI4Bimudv54t3c1"/>
+      <!-- JDBC: URL/user/password vêm de env vars (DB_HOST/PORT/NAME/USER/PASSWORD) via JpaUtil.java.
+           Sem essas envs a aplicação não sobe — ver SETUP.md. -->
+      <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 
       <!-- Hibernate -->
       <!-- MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialec
         <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>-->
       <property name="jakarta.persistence.schema-generation.database.action" value="update"/><!--create,update or none-->
-      <property name="hibernate.show_sql" value="true"/>
-      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.format_sql" value="false"/>
     </properties>
   </persistence-unit>
 </persistence>

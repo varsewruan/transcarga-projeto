@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login · Transcarga</title>
+    <link rel="icon" href="assets/TranscargaLogo.png" type="image/png">
+    <link rel="stylesheet" href="Fretes.css">
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <img src="assets/transcarga_sm.png" class="auth-logo" alt="Transcarga">
+            <h1>Entrar</h1>
+            <p class="auth-sub">Acesse sua conta para continuar.</p>
+
+            <form class="auth-form" id="loginForm" autocomplete="on">
+                <div class="field">
+                    <label for="login">Login</label>
+                    <input id="login" name="login" type="text" required autofocus>
+                </div>
+                <div class="field">
+                    <label for="senha">Senha</label>
+                    <input id="senha" name="senha" type="password" required>
+                </div>
+                <button type="submit" class="auth-btn">Entrar</button>
+                <div id="msg" class="auth-msg"></div>
+            </form>
+
+            <p class="auth-link">Não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const msg = document.getElementById('msg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            msg.className = 'auth-msg';
+            const body = new URLSearchParams();
+            body.set('action', 'login');
+            body.set('login', document.getElementById('login').value);
+            body.set('senha', document.getElementById('senha').value);
+
+            try {
+                const r = await fetch('AuthServlet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body
+                });
+                const data = await r.json();
+                if (r.ok && data.success) {
+                    msg.className = 'auth-msg ok';
+                    msg.textContent = 'Login realizado. Redirecionando...';
+                    setTimeout(() => {
+                        window.location.href = data.admin ? 'home.html' : 'listarFretes.html';
+                    }, 400);
+                } else {
+                    msg.className = 'auth-msg error';
+                    msg.textContent = data.message || 'Falha ao entrar.';
+                }
+            } catch {
+                msg.className = 'auth-msg error';
+                msg.textContent = 'Erro de conexão com o servidor.';
+            }
+        });
+    </script>
+</body>
+
+</html>
